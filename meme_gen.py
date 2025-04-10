@@ -3,21 +3,18 @@ import textwrap
 import requests
 from io import BytesIO
 
-# ✅ Drake Meme Template (online)
-DRAKE_TEMPLATE_URL = "https://i.imgflip.com/30b1gx.jpg"  # Drake Format
+DRAKE_TEMPLATE_URL = "https://i.imgflip.com/30b1gx.jpg"
 
-# ✅ Download image from URL
 def download_template(url):
     response = requests.get(url)
     return Image.open(BytesIO(response.content))
 
-# ✅ Draw text on image
 def add_captions(img, top_text, bottom_text):
     draw = ImageDraw.Draw(img)
     width, height = img.size
 
     try:
-        font = ImageFont.truetype("C:/Windows/Fonts/impact.ttf", 60)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 60)
     except:
         font = ImageFont.load_default()
 
@@ -37,7 +34,7 @@ def add_captions(img, top_text, bottom_text):
         return lines
 
     def draw_wrapped_text(text, y_start):
-        max_width = width // 2 - 40  # only right half
+        max_width = width // 2 - 40
         x_offset = width // 2 + 20
 
         lines = []
@@ -61,22 +58,11 @@ def add_captions(img, top_text, bottom_text):
 
     return img
 
-
-
-# ✅ Main meme generator
 def generate_drake_meme(title, output_filename="generated_drake_meme.jpg"):
     lowered = title.lower()
-
-    # Smart split keywords
     separators = [
-        " but ",
-        " instead of ",
-        " vs ",
-        " versus ",
-        " rather than ",
-        " not ",
-        " don't ",
-        ", then "
+        " but ", " instead of ", " vs ", " versus ",
+        " rather than ", " not ", " don't ", ", then "
     ]
 
     top_text = bottom_text = ""
@@ -89,7 +75,6 @@ def generate_drake_meme(title, output_filename="generated_drake_meme.jpg"):
                 bottom_text = parts[1].strip()
                 break
 
-    # Fallback split (just in case)
     if not top_text or not bottom_text:
         words = title.strip().split()
         midpoint = len(words) // 2
@@ -104,8 +89,7 @@ def generate_drake_meme(title, output_filename="generated_drake_meme.jpg"):
     img.save(output_filename)
     print(f"✅ Meme saved as '{output_filename}'")
 
-# ✅ Run directly
 if __name__ == "__main__":
-    # 💬 You can change this to Reddit title later
     test_title = "When you debug for 3 hours and realize it was a missing semicolon"
     generate_drake_meme(test_title)
+
