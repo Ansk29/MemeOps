@@ -8,7 +8,8 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git 'git@github.com:Ansk29/MemeOps.git'
+                git branch: 'main', url: 'git@github.com:Ansk29/MemeOps.git'
+
             }
         }
 
