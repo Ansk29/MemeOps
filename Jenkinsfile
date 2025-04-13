@@ -2,46 +2,49 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "ansk29/memeops"
+        DOCKER_IMAGE = "ansk29/memeops"
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone Repo') {
             steps {
-                echo 'Repository cloned via Jenkins SCM'
+                git 'git@github.com:Ansk29/MemeOps.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    dockerImage = docker.build("${IMAGE_NAME}")
+                    dockerImage = docker.build("${DOCKER_IMAGE}")
                 }
             }
         }
 
         stage('Login to DockerHub & Push Image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    script {
-                        sh "echo $PASSWORD | docker login -u $USERNAME --password-stdin"
-                        sh "docker push ${IMAGE_NAME}"
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                    sh '''
+                        echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+                        docker push ansk29/memeops
+                    '''
                 }
             }
         }
 
-        stage('Run MemeOps Container') {
+        stage('Deploy via Ansible') {
             steps {
-                sh 'docker rm -f memeops-container || true' // Remove existing container if running
-                sh 'docker run -d --name memeops-container -p 5000:5000 ansk29/memeops'
+                // No password prompt! So either use passwordless sudo or limit sudo in playbook
+                sh '''
+                    ansible-playbook ansible-deploy/deploy.yml -i ansible-deploy/hosts
+                '''
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline complete.'
+            // Cleanup old container if any
+            sh 'docker rm -f memeops-app || true'
         }
     }
 }
