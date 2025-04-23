@@ -1,0 +1,53 @@
+version: '3.7'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.0
+    container_name: logstash
+    ports:
+      - "5000:5000"   # Ensure this is the correct port for Logstash input
+      - "12201:12201/udp"
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
+    networks:
+      - elk
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - elk
+
+  memeops:
+    image: ansk29/memeops
+    container_name: memeops
+    ports:
+      - "5002:5000"   # Changing this port to avoid conflict with Logstash
+   # logging:
+   #   driver: "gelf"
+   #   options:
+   #     gelf-address: "udp://logstash:12201"
+   # depends_on:
+   #   - logstash
+   # networks:
+   #  - elk
+
+networks:
+  elk:
+    driver: bridge
+
