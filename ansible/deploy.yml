@@ -1,0 +1,8 @@
+---
+- name: Deploy MemeOps using Role
+  hosts: web
+  become: false
+
+  roles:
+    - memeops
+
