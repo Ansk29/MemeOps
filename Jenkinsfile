@@ -34,8 +34,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying to Kubernetes cluster...'
-                sh 'kubectl apply -f memeops-deployment.yaml'
-                sh 'kubectl apply -f memeops-service.yaml'
+                sh 'kubectl apply -f k8s/memeops-deployment.yaml'
+                sh 'kubectl apply -f k8s/memeops-service.yaml'
                 sh 'kubectl get pods'
                 sh 'kubectl get svc'
             }
