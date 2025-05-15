@@ -1,10 +1,27 @@
 ---
-- name: Pull latest MemeOps image
-  shell: docker pull ansk29/memeops
+---
+- name: Deploy MemeOps using Vault-secured credentials
+  hosts: web
+  become: false
+  tasks:
 
-- name: Stop existing container if running
-  shell: docker rm -f memeops-container || true
+    - name: Get DockerHub username from Vault
+      set_fact:
+        dockerhub_username: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=secret/dockerhub:username') }}"
 
-- name: Run MemeOps container
-  shell: docker run -d --name memeops-container -p 5000:5000 ansk29/memeops
+    - name: Get DockerHub password from Vault
+      set_fact:
+        dockerhub_password: "{{ lookup('community.hashi_vault.hashi_vault', 'secret=secret/dockerhub:password') }}"
+
+    - name: Login to DockerHub securely
+      shell: echo "{{ dockerhub_password }}" | docker login -u "{{ dockerhub_username }}" --password-stdin
+
+    - name: Pull latest MemeOps image from DockerHub
+      shell: docker pull ansk29/memeops
+
+    - name: Stop existing MemeOps container if running
+      shell: docker rm -f memeops-container || true
+
+    - name: Run MemeOps container from latest image
+      shell: docker run -d --name memeops-container -p 5000:5000 ansk29/memeops
 
