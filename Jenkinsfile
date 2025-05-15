@@ -9,7 +9,6 @@ pipeline {
         stage('Clone Repo') {
             steps {
                 git branch: 'main', url: 'git@github.com:Ansk29/MemeOps.git'
-
             }
         }
 
@@ -32,9 +31,18 @@ pipeline {
             }
         }
 
-        stage('Deploy via Ansible') {
+        stage('Deploy to Kubernetes') {
             steps {
-                // No password prompt! So either use passwordless sudo or limit sudo in playbook
+                echo 'Deploying to Kubernetes cluster...'
+                sh 'kubectl apply -f memeops-deployment.yaml'
+                sh 'kubectl apply -f memeops-service.yaml'
+                sh 'kubectl get pods'
+                sh 'kubectl get svc'
+            }
+        }
+
+        stage('(Optional) Deploy via Ansible') {
+            steps {
                 sh '''
                     ansible-playbook ansible-deploy/deploy.yml -i ansible-deploy/hosts
                 '''
@@ -44,7 +52,7 @@ pipeline {
 
     post {
         always {
-            // Cleanup old container if any
+            // Clean up old Docker container if it exists
             sh 'docker rm -f memeops-app || true'
         }
     }
