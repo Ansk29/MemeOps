@@ -36,6 +36,7 @@ pipeline {
                 echo 'Deploying to Kubernetes cluster...'
                 sh 'kubectl apply -f k8s/memeops-deployment.yaml'
                 sh 'kubectl apply -f k8s/memeops-service.yaml'
+                sh 'kubectl apply -f k8s/memeops-hpa.yaml'
                 sh 'kubectl get pods'
                 sh 'kubectl get svc'
             }
