@@ -13,7 +13,13 @@ spec:
         app: memeops
     spec:
       containers:
-      - name: memeops-container
-        image: ansk29/memeops:latest
-        ports:
-        - containerPort: 5000
+        - name: memeops-container
+          image: ansk29/memeops:latest
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
+
