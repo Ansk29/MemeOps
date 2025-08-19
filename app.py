@@ -5,7 +5,7 @@ from meme_gen import generate_drake_meme
 
 app = Flask(__name__)
 
-# ✅ Reddit API Setup
+#  Reddit API Setup
 reddit = praw.Reddit(
     client_id="5h4vo8TLnRRHkLlzUaMFKA",
     client_secret="J1vwyYuOEl3RQvsAKKhJdoS7ay9TWA",
@@ -14,7 +14,7 @@ reddit = praw.Reddit(
     user_agent="memeops-trends by u/adityavshinde"
 )
 
-# ✅ Smart contrast checker
+#  Smart contrast checker
 def is_meme_friendly(title):
     title = title.lower()
     contrast_keywords = [
@@ -32,11 +32,11 @@ def is_meme_friendly(title):
                         return True
     return False
 
-# ✅ Filter only titles with good meme format
+#  Filter only titles with good meme format
 def filter_contrast_memes(titles):
     return [title for title in titles if is_meme_friendly(title)]
 
-# ✅ Fetch Reddit Titles from multiple subreddits
+#  Fetch Reddit Titles from multiple subreddits
 def fetch_multiple_subreddits(subreddits=["memes", "dankmemes", "ProgrammerHumor", "AdviceAnimals", "funny", "me_irl", "wholesomememes", "technicallythetruth"], count=50):
     titles = []
     for sub in subreddits:
@@ -47,7 +47,7 @@ def fetch_multiple_subreddits(subreddits=["memes", "dankmemes", "ProgrammerHumor
             print(f"Error fetching from subreddit {sub}: {e}")
     return titles
 
-# ✅ Home route - Show trending titles with button
+#  Home route - Show trending titles with button
 def clean_generated_memes():
     meme_dir = os.path.join("static", "memes")
     if not os.path.exists(meme_dir):
@@ -62,7 +62,7 @@ def home():
     filtered = filter_contrast_memes(titles)
     return render_template("index.html", titles=filtered)
 
-# ✅ Drake Meme Generator Route
+#  Drake Meme Generator Route
 @app.route('/generate-memes')
 def generate_memes():
     titles = fetch_multiple_subreddits()
