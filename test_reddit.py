@@ -9,7 +9,7 @@ reddit = praw.Reddit(
 )
 
 try:
-    print("✅ Logged in as:", reddit.user.me())
+    print(" Logged in as:", reddit.user.me())
 except Exception as e:
     print("❌ Error:", e)
 
